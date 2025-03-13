@@ -28,7 +28,7 @@ class Player{
 		this.clip
 		this.action
 	}
-	
+
 	loadBaseModel(loader){
 		loader.load(this.playerPath + 'Player.gltf', (gltf) =>{
 			this.baseModel = gltf
@@ -43,7 +43,7 @@ class Player{
 			//console.log(this.skeleton)
 		})
 	}
-	
+
 	loadBodyParts(loader){
 		loader.load(this.playerPath + helms[this.helm][0] + '.gltf', (gltf) =>{// helm
 			let root = gltf
@@ -72,7 +72,7 @@ class Player{
 			this.player.add(root.scene)
 		})
 	}
-	
+
 	xx(){
 		console.log('funcionou')
 	}

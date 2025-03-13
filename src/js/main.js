@@ -1,8 +1,8 @@
 'use_strict'
 
 import * as THREE from 'three'
-import {OrbitControls} from 'OrbitControls'
-import {GLTFLoader} from 'GLTFLoader'
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
 import Player from './player.js'
 
 // global vars
@@ -130,16 +130,16 @@ let flying = false
 
 
 function main(){
-	
+
 	// event handlers
 	addEventListener('keydown', keydown);
 	addEventListener('keyup', keyup);
-	
-	
+
+
 	animate()
-	
-	
-	
+
+
+
 }
 
 function resizeRendererToDisplay(renderer){
@@ -165,23 +165,23 @@ function keydown(event){
 		break;
 		case 65:// a
 			walkDir[0][2] = 1;
-			
+
 		break;
 		case 68:// d
 			walkDir[0][3] = 1;
-			
+
 		break;
 		case 81:// 1
 			//player.position.y += player.speed;
-			
+
 		break;
 		case 69:// e
 			//player.position.y -= player.speed;
-			
+
 		break;
 		case 32:// e
 			console.log(player.player.position)
-			
+
 		break;
 	}
 }
@@ -253,7 +253,7 @@ function floorCollision(){
 	const offsetY = 0.05
 	var globalRay = new THREE.Raycaster(player.player.position, new THREE.Vector3(player.player.position.x, -100, player.player.position.z).normalize())
 	var linearCollision = globalRay.intersectObjects(collidableMeshList)
-	
+
 	if(linearCollision.length > 0){
 		differential = linearCollision[0].distance - offsetY
 		if(differential > 0){
@@ -274,7 +274,7 @@ function animate(){
 	// animation
 	playerOrientation()
 	walk()
-	
+
 	if(loadStage == 2 && player.mixer != null){
 		//console.log("teste")
 		player.mixer.update(0.005)
@@ -291,7 +291,7 @@ function update(){
 		camera.aspect = canvas.clientWidth / canvas.clientHeight
 		camera.updateProjectionMatrix()
 	}
-	
+
 	if(loadStage == 1){
 		player.player.scale.set(0.01, 0.01, 0.01)
 		player.player.position.y = 1
@@ -301,7 +301,7 @@ function update(){
 		//scene.add(skeletonHelper)
 		loadStage = 2
 	}
-	
+
 	camera.position.set(player.player.position.x + cameraOffsetX, player.player.position.y + cameraOffsetY, player.player.position.z + cameraOffsetZ);// camera follows player
 	//camera.lookAt(player.player)
 	camera.updateProjectionMatrix()
@@ -318,10 +318,10 @@ for(var vertexIndex = 1; vertexIndex < cube.geometry.attributes.position.array.l
 	var localVertex = new THREE.Vector3().fromBufferAttribute(cube.geometry.attributes.position, vertexIndex).clone()
 	var globalVertex = localVertex.applyMatrix4(cube.matrix)
 	var directionVector = globalVertex.sub(cube.position)
-	
+
 	var vertexRay = new THREE.Raycaster(cube.position, directionVector.clone().normalize())
 	var vertexCollisions = vertexRay.intersectObjects(collidableMeshList)
-	
+
 	if(vertexCollisions.length > 0 && vertexCollisions[0].distance < directionVector.length()){
 		let calcDistanceY = cube.position.y + vertexCollisions[0].uv.y
 		cube.position.y = calcDistanceY
