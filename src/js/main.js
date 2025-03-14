@@ -3,6 +3,7 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
+import {Pathfinding, PathfindingHelper} from 'three-pathfinding'
 import Player from './player.js'
 
 // global vars
@@ -11,6 +12,20 @@ const renderer = new THREE.WebGLRenderer({canvas})
 const scene = new THREE.Scene()
 const manager = new THREE.LoadingManager()
 const loadGLTF = new GLTFLoader(manager)
+
+// pathfinding
+const raycaster = new THREE.Raycaster()
+const mousePos = new THREE.Vector2()
+const mouseClick = new THREE.Vector2()
+const pathfinding = new Pathfinding()
+const pathfindingHelper = new PathfindingHelper()
+const clock = new THREE.Clock()
+let navmesh
+let navpath;
+let groupId;
+let ZONE = 'map01'
+var showPath = true
+scene.add(pathfindingHelper)
 
 // common settings
 renderer.shadowMap.enabled = true;
@@ -76,6 +91,8 @@ loadGLTF.load(modelSrc, function(gltf){
 	gltf.scenes[0].children[0].receiveShadow = true
 	scene.add(gltf.scene)
 	const floor = gltf.scenes[0].children[0]
+	navmesh = floor
+	pathfinding.setZoneData('map01', Pathfinding.createZone(navmesh.geometry));
 	collidableMeshList.push(gltf.scenes[0].children[0])
 	isFloor = 1
 })
@@ -123,8 +140,51 @@ player.loadBodyParts(loadGLTF)
 const walkDir = [[0,0,0,0]]; // [[forward][backward][left][right]]
 let flying = false
 
+function followPath(delta){
+	if(!navpath || navpath.length <= 0){
+		player.charAction = "player_2";
+		return;
+	}
 
+	let targetPosition = navpath[0];
+	const distance = targetPosition.clone().sub(player.player.position);
+	if(distance.lengthSq() > 0.5 * 0.20){
+		distance.normalize();
+		player.charAction = "player_40";
+		player.player.lookAt(targetPosition.x, targetPosition.y ,targetPosition.z);
+		player.player.position.add(distance.multiplyScalar(delta * 3));
+	}else{
+		navpath.shift();
+	}
+}
 
+function getMousePos(event){
+	mousePos.x = (event.clientX / window.innerWidth) * 2 - 1
+	mousePos.y = -(event.clientY / window.innerHeight) * 2 + 1
+	// console.log(mousePos)
+}
+
+function tracePlayerPath(){
+	mouseClick.x = mousePos.x;
+	mouseClick.y = mousePos.y;
+	raycaster.setFromCamera(mouseClick, camera);
+	const found = raycaster.intersectObjects(scene.children);
+	if(found.length > 0){
+		let target = found[0].point;
+		// if(found[0].object.name != "navmesh"){
+		// 	return;
+		// }
+		groupId = pathfinding.getGroup(ZONE, player.player.position);
+		const closest = pathfinding.getClosestNode(player.player.position, ZONE, groupId);
+		navpath = pathfinding.findPath(closest.centroid, target, ZONE, groupId);
+		if(navpath && showPath){
+			pathfindingHelper.reset();
+			pathfindingHelper.setPlayerPosition(player.player.position);
+			pathfindingHelper.setTargetPosition(target);
+			pathfindingHelper.setPath(navpath);
+		}
+	}
+}
 
 
 
@@ -132,8 +192,8 @@ let flying = false
 function main(){
 
 	// event handlers
-	addEventListener('keydown', keydown);
-	addEventListener('keyup', keyup);
+	addEventListener('keydown', keydown)
+	addEventListener('keyup', keyup)
 
 
 	animate()
@@ -310,6 +370,8 @@ function update(){
 }
 
 function render(){
+	let delta = clock.getDelta()
+	followPath(delta)
 	renderer.render(scene, camera)
 }
 
@@ -331,3 +393,15 @@ for(var vertexIndex = 1; vertexIndex < cube.geometry.attributes.position.array.l
 
 
 main()
+
+addEventListener('mousemove', event => {
+	getMousePos(event)
+	if(loadStage == 1){
+	}
+})
+
+addEventListener('mousedown', event => {
+	tracePlayerPath()
+	if(loadStage == 1){
+	}
+})
