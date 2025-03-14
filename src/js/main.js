@@ -142,7 +142,7 @@ let flying = false
 
 function followPath(delta){
 	if(!navpath || navpath.length <= 0){
-		player.charAction = "player_2";
+		player.setState("iddle")
 		return;
 	}
 
@@ -150,7 +150,7 @@ function followPath(delta){
 	const distance = targetPosition.clone().sub(player.player.position);
 	if(distance.lengthSq() > 0.5 * 0.20){
 		distance.normalize();
-		player.charAction = "player_40";
+		player.setState("walking")
 		player.player.lookAt(targetPosition.x, targetPosition.y ,targetPosition.z);
 		player.player.position.add(distance.multiplyScalar(delta * 3));
 	}else{
@@ -372,6 +372,7 @@ function update(){
 function render(){
 	let delta = clock.getDelta()
 	followPath(delta)
+	player.updateAnimation(delta / 3, "player_2");
 	renderer.render(scene, camera)
 }
 
