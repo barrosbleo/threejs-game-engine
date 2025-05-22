@@ -57,9 +57,9 @@ const fov = 65
 const aspect = 1
 const near = 0.01
 const far = 1000
-const cameraOffsetX = 3
-const cameraOffsetY = 4.2
-const cameraOffsetZ = 3
+const cameraOffsetX = 2.5
+const cameraOffsetY = 4.0
+const cameraOffsetZ = 2.5
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 camera.position.set(cameraOffsetX, cameraOffsetY, cameraOffsetZ);
 camera.lookAt(0, 0, 0);
