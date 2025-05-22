@@ -114,7 +114,7 @@ class Player{
 				break;
 		}
 
-		console.log(this.state)
+		// console.log(this.state)
 		newClip = THREE.AnimationClip.findByName(this.clips, newClip)
 
 		newAction = this.mixer.clipAction(newClip)
@@ -126,7 +126,7 @@ class Player{
 			.play()
 
 		this.previousState = this.state
-		
+
 		this.updateAction(newAction)
 
 		this.mixer.update(delta)

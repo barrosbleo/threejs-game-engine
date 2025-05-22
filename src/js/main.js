@@ -147,12 +147,27 @@ function followPath(delta){
 	}
 
 	let targetPosition = navpath[0];
+
 	const distance = targetPosition.clone().sub(player.player.position);
+
 	if(distance.lengthSq() > 0.5 * 0.20){
 		distance.normalize();
+
 		player.setState("walking")
-		player.player.lookAt(targetPosition.x, targetPosition.y ,targetPosition.z);
+
 		player.player.position.add(distance.multiplyScalar(delta * 3));
+
+		const lookTarget = targetPosition.clone();
+
+		lookTarget.y = player.player.position.y; // keep head level
+
+		const direction = lookTarget.clone().sub(player.player.position).normalize();
+
+		const quaternion = new THREE.Quaternion();
+
+		quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), direction);
+
+		player.player.quaternion.slerp(quaternion, 0.25);
 	}else{
 		navpath.shift();
 	}
