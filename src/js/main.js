@@ -155,7 +155,7 @@ function followPath(delta){
 
 		player.setState("walking")
 
-		player.player.position.add(distance.multiplyScalar(delta * 3));
+		player.player.position.add(distance.multiplyScalar(delta * 2));
 
 		const lookTarget = targetPosition.clone();
 
@@ -368,11 +368,11 @@ function update(){
 	}
 
 	if(loadStage == 1){
-		player.player.scale.set(0.01, 0.01, 0.01)
+		player.player.scale.set(0.0075, 0.0075, 0.0075)
 		player.player.position.y = 1
 		scene.add(player.player)
 		const skeletonHelper = new THREE.SkeletonHelper(player.player.children[0].children[0])
-		skeletonHelper.scale.set(0.01, 0.01, 0.01)
+		skeletonHelper.scale.set(0.0075, 0.0075, 0.0075)
 		//scene.add(skeletonHelper)
 		loadStage = 2
 	}
